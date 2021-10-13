@@ -16,6 +16,9 @@ import { styled } from '@mui/material/styles';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 
+import { useDispatch } from 'react-redux';
+import { show } from '../redux/snackbarSlice';
+
 import { addChannel } from '../api/apiChannel';
 
 const Input = styled('input')({
@@ -32,15 +35,38 @@ const AddChannel = () => {
     fileName: 'Please press button to upload file.',
   });
 
+  // get the global states for the snackbar
+  const dispatch = useDispatch();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(formValues);
     addChannel(formValues)
       .then((data) => {
-        console.log(data.newChannel);
+        if (data.status === 'nok') {
+          dispatch(
+            show({
+              message: 'Can not add channel - duplicate multicast address?',
+              severity: 'error',
+            })
+          );
+        } else {
+          dispatch(
+            show({
+              message: 'Channel successfully added',
+              severity: 'success',
+            })
+          );
+        }
       })
       .catch((error) => {
         console.log(error);
+        dispatch(
+          show({
+            message: 'Can not add channel',
+            severity: 'error',
+          })
+        );
       });
   };
 
@@ -128,6 +154,8 @@ const AddChannel = () => {
           </Grid>
           <Grid item xs={11}>
             <TextField
+              // we need name for the multer middleware in the backend, have to have the same name
+              name='logoImage'
               label='Filename'
               fullWidth
               variant='standard'

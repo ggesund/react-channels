@@ -16,6 +16,8 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
+import PermMediaOutlinedIcon from '@mui/icons-material/PermMediaOutlined';
 
 const drawerWidth = 240;
 
@@ -74,17 +76,36 @@ export default function Layout(props) {
           <List>
             <ListItem
               button
-              key='allchannels'
+              key='addimage'
+              // onClick={() => history.push("/")}
               component={Link}
-              to='/channels'
-              onClick={(e) => handleListItemClick('allchannels', e)}
-              selected={selectedItem === 'allchannels'}
+              to='/add-image'
+              onClick={(e) => handleListItemClick('addimage', e)}
+              selected={selectedItem === 'addimage'}
             >
               <ListItemIcon>
-                <ListAltIcon />
+                <AddPhotoAlternateOutlinedIcon />
               </ListItemIcon>
-              <ListItemText primary='All Channels' />
+              <ListItemText primary='Upload image' />
             </ListItem>
+            <ListItem
+              button
+              key='allimages'
+              // onClick={() => history.push("/")}
+              component={Link}
+              to='/images'
+              onClick={(e) => handleListItemClick('allimages', e)}
+              selected={selectedItem === 'allimages'}
+            >
+              <ListItemIcon>
+                <PermMediaOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary='All images' />
+            </ListItem>
+          </List>
+          <Divider />
+
+          <List>
             <ListItem
               button
               key='addchannel'
@@ -97,6 +118,19 @@ export default function Layout(props) {
                 <PlaylistAddIcon />
               </ListItemIcon>
               <ListItemText primary='Add Channel' />
+            </ListItem>
+            <ListItem
+              button
+              key='allchannels'
+              component={Link}
+              to='/channels'
+              onClick={(e) => handleListItemClick('allchannels', e)}
+              selected={selectedItem === 'allchannels'}
+            >
+              <ListItemIcon>
+                <ListAltIcon />
+              </ListItemIcon>
+              <ListItemText primary='All Channels' />
             </ListItem>
           </List>
         </Box>
