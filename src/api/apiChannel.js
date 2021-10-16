@@ -19,3 +19,11 @@ export const getAllChannels = async () => {
 
   return response.json();
 };
+
+export const getAllChannelsWithImages = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_CHANNEL_API}/withimages`
+  );
+
+  return response.json();
+};

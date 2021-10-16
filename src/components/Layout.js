@@ -18,6 +18,8 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import PermMediaOutlinedIcon from '@mui/icons-material/PermMediaOutlined';
+import FeaturedPlayListOutlinedIcon from '@mui/icons-material/FeaturedPlayListOutlined';
+import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
 
 const drawerWidth = 240;
 
@@ -103,6 +105,7 @@ export default function Layout(props) {
               <ListItemText primary='All images' />
             </ListItem>
           </List>
+
           <Divider />
 
           <List>
@@ -131,6 +134,37 @@ export default function Layout(props) {
                 <ListAltIcon />
               </ListItemIcon>
               <ListItemText primary='All Channels' />
+            </ListItem>
+          </List>
+
+          <Divider />
+
+          <List>
+            <ListItem
+              button
+              key='addchannellist'
+              component={Link}
+              to='/add-channel-list'
+              onClick={(e) => handleListItemClick('addchannellist', e)}
+              selected={selectedItem === 'addchannellist'}
+            >
+              <ListItemIcon>
+                <FeaturedPlayListOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary='Add Channel List' />
+            </ListItem>
+            <ListItem
+              button
+              key='allchannellists'
+              component={Link}
+              to='/channellists'
+              onClick={(e) => handleListItemClick('allchannellists', e)}
+              selected={selectedItem === 'allchannellists'}
+            >
+              <ListItemIcon>
+                <FileCopyOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary='All Channel Lists' />
             </ListItem>
           </List>
         </Box>

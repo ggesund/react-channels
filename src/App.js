@@ -11,6 +11,8 @@ import Channels from './pages/Channels';
 import AddChannel from './pages/AddChannel';
 import AddImage from './pages/AddImage';
 import Images from './pages/Images';
+import AddChannelList from './pages/AddChannelList';
+import ChannelLists from './pages/ChannelLists';
 
 function App() {
   return (
@@ -22,6 +24,12 @@ function App() {
           <Route exact path='/images' component={Images}></Route>
           <Route exact path='/add-channel' component={AddChannel}></Route>
           <Route exact path='/add-image' component={AddImage}></Route>
+          <Route
+            exact
+            path='/add-channel-list'
+            component={AddChannelList}
+          ></Route>
+          <Route exact path='/channellists' component={ChannelLists}></Route>
         </Switch>
       </Layout>
       <CustomSnackbar />

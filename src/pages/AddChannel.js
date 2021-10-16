@@ -5,25 +5,19 @@ import {
   Container,
   Grid,
   Button,
-  IconButton,
-  Stack,
+  MenuItem,
 } from '@mui/material';
 
-import { useState } from 'react';
-
-import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
 
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 
 import { useDispatch } from 'react-redux';
 import { show } from '../redux/snackbarSlice';
 
 import { addChannel } from '../api/apiChannel';
 
-const Input = styled('input')({
-  display: 'none',
-});
+import { getImageIdAndName } from '../api/apiImage';
 
 const AddChannel = () => {
   const [formValues, setFormValues] = useState({
@@ -32,8 +26,21 @@ const AddChannel = () => {
     protocol: 'igmp',
     multicast: '',
     port: '8208',
-    fileName: 'Please press button to upload file.',
+    image: '',
   });
+
+  // state for image id and originalName
+  const [imgIdAndName, setImgIdAndName] = useState([]);
+
+  useEffect(() => {
+    loadImgIdAndName();
+  }, []);
+
+  const loadImgIdAndName = () => {
+    getImageIdAndName().then((res) => {
+      setImgIdAndName(res.data);
+    });
+  };
 
   // get the global states for the snackbar
   const dispatch = useDispatch();
@@ -76,12 +83,9 @@ const AddChannel = () => {
     console.log(event);
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-
-    console.log('Filename: ', file.name);
-    setFormValues({ ...formValues, fileName: file.name });
-    console.log('File type: ', file.type);
+  const handleSelectChange = (event) => {
+    console.log(event.target.value);
+    setFormValues({ ...formValues, image: event.target.value });
   };
 
   return (
@@ -89,6 +93,7 @@ const AddChannel = () => {
       <Typography variant='h5' component='div'>
         Create Channel
       </Typography>
+
       <Box component='form' onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -101,6 +106,7 @@ const AddChannel = () => {
               color='success'
               name='name'
               value={formValues.name}
+              required
             />
           </Grid>
           <Grid item xs={12}>
@@ -113,6 +119,7 @@ const AddChannel = () => {
               color='success'
               name='label'
               value={formValues.label}
+              required
             />
           </Grid>
 
@@ -126,6 +133,7 @@ const AddChannel = () => {
               color='success'
               value={formValues.protocol}
               name='protocol'
+              required
             />
           </Grid>
           <Grid item xs={8}>
@@ -138,6 +146,7 @@ const AddChannel = () => {
               color='success'
               value={formValues.multicast}
               name='multicast'
+              required
             />
           </Grid>
           <Grid item xs={2}>
@@ -150,45 +159,29 @@ const AddChannel = () => {
               color='success'
               value={formValues.port}
               name='port'
+              required
             />
           </Grid>
-          <Grid item xs={11}>
+          <Grid item xs={12}>
             <TextField
-              // we need name for the multer middleware in the backend, have to have the same name
-              name='logoImage'
-              label='Filename'
-              fullWidth
+              id='filled-select-currency'
+              select
+              label='Select Image'
+              value={formValues.image}
+              onChange={handleSelectChange}
+              helperText='Please select your image'
               variant='standard'
-              value={formValues.fileName}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <Stack
-              spacing={2}
-              justifyContent='center'
-              alignItems='center'
-              sx={{ marginTop: '8px' }}
+              fullWidth
+              required
             >
-              <label htmlFor='icon-button-file'>
-                <Input
-                  accept='image/*'
-                  id='icon-button-file'
-                  type='file'
-                  onChange={handleFileUpload}
-                />
-                <IconButton
-                  color='primary'
-                  aria-label='upload picture'
-                  component='span'
-                >
-                  <FileUploadOutlinedIcon />
-                </IconButton>
-              </label>
-            </Stack>
+              {imgIdAndName.map((option) => (
+                <MenuItem key={option._id} value={option._id}>
+                  {option.originalName}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
+
           <Grid item xs={12}>
             <Box
               sx={{

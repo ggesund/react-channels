@@ -7,8 +7,9 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
-import { getAllImages } from '../api/apiImage';
+import { deleteImage, getAllImages } from '../api/apiImage';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 import { useDispatch } from 'react-redux';
@@ -18,6 +19,8 @@ const Images = () => {
   const [allImages, setAllImages] = useState([]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [imageId, setImageId] = useState('');
 
   const dispatch = useDispatch();
 
@@ -39,19 +42,35 @@ const Images = () => {
       });
   };
 
-  const onImageDeleteHandler = (event) => {
+  const onImageDeleteHandler = (id) => {
+    console.log('Image ID', id);
+    setImageId(id);
     setDialogOpen(true);
   };
 
   const onRemoveFromDBHandler = () => {
-    console.log('Now the image is removed from database and file storage');
-    dispatch(
-      show({
-        message: 'Image successfully deleted from database and file storage',
-        severity: 'warning',
+    deleteImage(imageId)
+      .then((res) => {
+        // console.log('Result of delete image: ', res);
+
+        dispatch(
+          show({
+            message: `Image ${res} successfully deleted from database and file storage`,
+            severity: 'warning',
+          })
+        );
+        setDialogOpen(false);
+        loadAllImages();
       })
-    );
-    setDialogOpen(false);
+      .catch((err) => {
+        dispatch(
+          show({
+            message: 'Image NOT deleted from database and file storage',
+            severity: 'error',
+          })
+        );
+        setDialogOpen(false);
+      });
   };
 
   return (
@@ -61,6 +80,7 @@ const Images = () => {
         setDialogOpen={setDialogOpen}
         title='Do you really want to delete that image?'
         subtitle='This action can not be undone!'
+        imageId={imageId}
         onRemoveFromDBHandler={onRemoveFromDBHandler}
       />
       <h2>All Images</h2>
@@ -82,15 +102,24 @@ const Images = () => {
               key={image._id}
               raised
             >
-              <CardMedia
-                component='img'
-                image={`data:${contentType};base64,${imgBase64}`}
-                alt={image.desc}
-                sx={{ padding: '10px' }}
-              />
+              <Box
+                sx={{
+                  height: '50px',
+                }}
+                component='div'
+              >
+                <CardMedia
+                  component='img'
+                  image={`data:${contentType};base64,${imgBase64}`}
+                  alt={image.desc}
+                  sx={{
+                    padding: '10px',
+                  }}
+                />
+              </Box>
 
               <CardContent>
-                <Typography gutterBottom variant='h5' component='div'>
+                <Typography gutterBottom variant='h6' component='div'>
                   {image.originalName}
                 </Typography>
                 <Typography variant='body2' color='text.secondary'>
@@ -110,7 +139,7 @@ const Images = () => {
                 <Button
                   size='small'
                   color='error'
-                  onClick={onImageDeleteHandler}
+                  onClick={() => onImageDeleteHandler(image._id)}
                 >
                   Delete
                 </Button>
