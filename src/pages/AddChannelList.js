@@ -49,6 +49,12 @@ const AddChannelList = () => {
   const [listName, setListName] = useState('');
   const [listDescription, setListDescription] = useState('');
 
+  // we have to initialise some states for DnD
+  const [isDragging, setIsDragging] = useState(false); // check, if we are currently dragging
+  const [draggedFrom, setDraggedFrom] = useState(null);
+  const [draggedTo, setDraggedTo] = useState(null);
+  const [updatedList, setUpdatedList] = useState([]);
+
   useEffect(() => {
     loadAllChannels();
     setSelectedChannels([]);
@@ -143,6 +149,57 @@ const AddChannelList = () => {
     setListName('');
   };
 
+  const onDragStartHandler = (event) => {
+    // beim Starten des DnD Vorgangs speichern wir die Position des zu bewegende ListItems
+    const initialPosition = Number(event.currentTarget.dataset.position);
+
+    setIsDragging(true);
+    setDraggedFrom(initialPosition);
+  };
+
+  const onDragOverHandler = (event) => {
+    event.preventDefault();
+
+    // store the selectedList in a variable
+    let newList = selectedChannels;
+
+    // index of the item beeing dragged
+    const draggedFromPosition = draggedFrom;
+
+    // index of the drop area being hovered
+    const draggedToPosition = Number(event.currentTarget.dataset.position);
+
+    // get the element that's at the position of "draggedFrom"
+    const itemDragged = newList[draggedFromPosition];
+
+    // filter out the item being dragged
+    const remainingItems = newList.filter(
+      (item, index) => index !== draggedFromPosition
+    );
+
+    // update the list
+    newList = [
+      ...remainingItems.slice(0, draggedToPosition),
+      itemDragged,
+      ...remainingItems.slice(draggedToPosition),
+    ];
+
+    // since this event fires many times
+    // we check if the targets are actually
+    // different:
+    if (draggedToPosition !== draggedTo) {
+      setUpdatedList(newList);
+      setDraggedTo(draggedToPosition);
+    }
+  };
+
+  const onDropHandler = (event) => {
+    setSelectedChannels(updatedList);
+    setIsDragging(false);
+    setDraggedFrom(false);
+    setDraggedTo(false);
+  };
+
   return (
     <Fragment>
       <Typography variant='h5' component='div' sx={{ marginBottom: '20px' }}>
@@ -235,8 +292,17 @@ const AddChannelList = () => {
               dense
             >
               {selectedChannels &&
-                selectedChannels.map((channel) => (
-                  <ListItem alignItems='flex-start' divider key={channel._id}>
+                selectedChannels.map((channel, index) => (
+                  <ListItem
+                    alignItems='flex-start'
+                    divider
+                    key={channel._id}
+                    draggable
+                    onDragStart={onDragStartHandler}
+                    onDragOver={onDragOverHandler}
+                    onDrop={onDropHandler}
+                    data-position={index}
+                  >
                     <ListItemButton
                       onClick={(e) =>
                         handleListItemClickSelected(e, channel._id)
@@ -245,6 +311,7 @@ const AddChannelList = () => {
                       <ListItemText
                         primary={channel.name}
                         secondary={channel.multicast}
+                        sx={{ cursor: 'move' }}
                       />
                     </ListItemButton>
                   </ListItem>
