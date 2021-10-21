@@ -48,6 +48,23 @@ const ChannelLists = () => {
     setPreview(JSON.stringify(outputArray, null, 2));
   };
 
+  const handleClearPreview = () => {
+    setPreview('');
+  };
+
+  const handleSaveToDisk = () => {
+    if (preview) {
+      let blob = new Blob([preview], { type: 'application/json' });
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'channel_list.json';
+      a.click();
+    } else {
+      return;
+    }
+  };
+
   return (
     <Fragment>
       <Typography component='div' variant='h6'>
@@ -110,6 +127,26 @@ const ChannelLists = () => {
               }}
               value={preview}
             />
+
+            <Button
+              color='warning'
+              variant='outlined'
+              sx={{ marginTop: '8px', marginRight: '8px' }}
+              disabled={!preview}
+              onClick={handleClearPreview}
+            >
+              Clear Preview
+            </Button>
+
+            <Button
+              color='success'
+              variant='outlined'
+              sx={{ marginTop: '8px' }}
+              disabled={!preview}
+              onClick={handleSaveToDisk}
+            >
+              Save to disk
+            </Button>
           </Grid>
         </Grid>
       </Box>

@@ -1,5 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 
+import { useHistory } from 'react-router-dom';
+
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -10,19 +12,28 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
 import { deleteImage, getAllImages } from '../api/apiImage';
-import ConfirmDialog from '../components/ConfirmDialog';
+import ConfirmDialog from '../dialogs/ConfirmDialog';
 
 import { useDispatch } from 'react-redux';
 import { show } from '../redux/snackbarSlice';
+// import UpdateImageDialog from '../dialogs/UpdateImageDialog';
 
 const Images = () => {
-  const [allImages, setAllImages] = useState([]);
+  const [allImages, setAllImages] = useState([]); // list of all images
+
+  // const [singleImage, setSingleImage] = useState(null); // single image (e.g. for update)
 
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // const [updateImageDialogOpen, setUpdateImageDialogOpen] = useState(false);
 
   const [imageId, setImageId] = useState('');
 
   const dispatch = useDispatch();
+
+  const history = useHistory();
+
+  // let singleImage;
 
   useEffect(() => {
     loadAllImages();
@@ -31,7 +42,7 @@ const Images = () => {
   const loadAllImages = () => {
     getAllImages()
       .then((res) => {
-        console.log(res);
+        // console.log(res);
 
         if (res.status === 'ok') {
           setAllImages(res.data);
@@ -43,9 +54,13 @@ const Images = () => {
   };
 
   const onImageDeleteHandler = (id) => {
-    console.log('Image ID', id);
     setImageId(id);
     setDialogOpen(true);
+  };
+
+  const onImageUpdateHandler = (id) => {
+    console.log('Reroute to image update page', id);
+    history.push(`/image/${id}`);
   };
 
   const onRemoveFromDBHandler = () => {
@@ -80,9 +95,9 @@ const Images = () => {
         setDialogOpen={setDialogOpen}
         title='Do you really want to delete that image?'
         subtitle='This action can not be undone!'
-        imageId={imageId}
         onRemoveFromDBHandler={onRemoveFromDBHandler}
       />
+
       <h2>All Images</h2>
       <Grid sx={{ flexGrow: 1 }} container spacing={2}>
         {/* {JSON.stringify(allImages)} */}
@@ -143,7 +158,12 @@ const Images = () => {
                 >
                   Delete
                 </Button>
-                <Button size='small'>Edit</Button>
+                <Button
+                  size='small'
+                  onClick={() => onImageUpdateHandler(image._id)}
+                >
+                  Edit
+                </Button>
               </CardActions>
             </Card>
           );

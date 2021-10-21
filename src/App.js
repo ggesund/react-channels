@@ -13,6 +13,7 @@ import AddImage from './pages/AddImage';
 import Images from './pages/Images';
 import AddChannelList from './pages/AddChannelList';
 import ChannelLists from './pages/ChannelLists';
+import UpdateImage from './pages/UpdateImage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             component={AddChannelList}
           ></Route>
           <Route exact path='/channellists' component={ChannelLists}></Route>
+          <Route exact path='/image/:imageId' component={UpdateImage}></Route>
         </Switch>
       </Layout>
       <CustomSnackbar />
